@@ -30,6 +30,13 @@ namespace HandMadeIoC
             var dependencies = parameterTypes.Select(t => this.GetInstance(t)).ToArray();
             return Activator.CreateInstance(implementationType, dependencies);
         }
+        // поиск конструктора с максимальным кол-ом возможных аргументов
+        private System.Reflection.ConstructorInfo GetConstructorWithMaxParametrs(Type implementationType)
+        {
+            var ctor = implementationType.GetConstructors();
+            var ctorWithMaxParametrs = ctor.OrderByDescending(r => r.GetParameters().Length).FirstOrDefault();
+            return ctorWithMaxParametrs;
+        }
     }
     public interface IEngine
     {
@@ -49,10 +56,7 @@ namespace HandMadeIoC
         public string Model { get; set; }
         public string Type { get; set; }
 
-        //public Car() //не пропускает GetInstance
-        //{
-
-        //}
+        
         public Car(IEngine engine)
         {
             _engine = engine;
